@@ -130,7 +130,7 @@ def get_source(headers):
     """
     Gets the source from the User-Agent header
     """
-    if "Better Uptime Bot" in headers.get("User-Agent", ""):
+    if "X-Betteruptime-Event" in headers:
         return "betteruptime"
 
     if "X-Gitlab-Event" in headers:
@@ -153,7 +153,7 @@ def get_source(headers):
 
 AUTHORIZED_SOURCES = {
     "betteruptime": EventSource(
-        "X-Betteruptime-Token"
+        "X-Betteruptime-Token", simple_token_verification
         ),
     "github": EventSource(
         "X-Hub-Signature", github_verification
