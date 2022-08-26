@@ -44,8 +44,7 @@ def index():
         raise Exception("Missing pubsub attributes")
 
     try:
-        # [TODO: Replace mock function below]
-        event = process_new_source_event(msg)
+        event = process_betteruptime_event(msg)
 
         # [Do not edit below]
         shared.insert_row_into_bigquery(event)
@@ -61,25 +60,21 @@ def index():
 
     return "", 204
 
-
-# [TODO: Replace mock function below]
-def process_new_source_event(msg):
+def process_betteruptime_event(msg):
     metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
 
-    # [TODO: Parse the msg data to map to the event object below]
-    new_source_event = {
-        "event_type": "event_type",  # Event type, eg "push", "pull_reqest", etc
-        "id": "e_id",  # Object ID, eg pull request ID
+    betteruptime_event = {
+        "event_type": metadata["type"],  # Event type, eg "push", "pull_reqest", etc
+        "id": metadata["id"],  # Object ID, eg pull request ID
         "metadata": json.dumps(metadata),  # The body of the msg
-        "time_created": 0,  # The timestamp of with the event
-        "signature": "signature",  # The unique event signature
+        "time_created": metadata["started_at"],  # The timestamp of with the event
+        "time_resolved": metadata["resolved_at"], # The timestamp the incident was resolved
         "msg_id": msg["message_id"],  # The pubsub message id
-        "source": "source",  # The name of the source, eg "github"
+        "source": "betteruptime",  # The name of the source, eg "github"
     }
 
-    print(new_source_event)
-    return new_source_event
-
+    print(betteruptime_event)
+    return betteruptime_event
 
 if __name__ == "__main__":
     PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 8080

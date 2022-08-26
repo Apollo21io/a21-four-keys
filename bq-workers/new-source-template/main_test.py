@@ -57,7 +57,7 @@ def test_missing_msg_attributes(client):
     assert "Missing pubsub attributes" in str(e.value)
 
 
-def test_new_source_event_processed(client):
+def test_betteruptime_event_processed(client):
     data = json.dumps({"foo": "bar"}).encode("utf-8")
     pubsub_msg = {
         "message": {
