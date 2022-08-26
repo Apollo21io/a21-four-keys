@@ -47,7 +47,7 @@ else
     read -p "Enter the region for Four Keys resources (ex: 'us-central1'): " FOURKEYS_REGION
     read -p "Enter the location for Four Keys BigQuery resources ('US' or 'EU'): " BIGQUERY_REGION
 
-    read -p "Which version control system are you using? 
+    read -p "Which version control system are you using?
     (1) GitLab
     (2) GitHub
     (3) Other
@@ -55,7 +55,7 @@ else
     Enter a selection (1 - 3): " git_system_id
 
     read -p "
-    Which CI/CD system are you using? 
+    Which CI/CD system are you using?
     (1) Cloud Build
     (2) Tekton
     (3) GitLab
@@ -65,7 +65,7 @@ else
     Enter a selection (1 - 5): " cicd_system_id
 
     read -p "
-    Which incident management system(s) are you using? 
+    Which incident management system(s) are you using?
     (1) PagerDuty
     (2) Other
 
@@ -106,6 +106,7 @@ esac
 
 case $incident_system_id in
     1) INCIDENT_SYSTEM="pagerduty"; read -p "Please enter the PagerDuty Signature Verification Token: " PAGERDUTY_SECRET ;;
+    2) INCIDENT_SYSTEM="betteruptime" ;;
     *) echo "Please see the documentation to learn how to extend to incident sources other than PagerDuty."
 esac
 
