@@ -67,9 +67,10 @@ else
     read -p "
     Which incident management system(s) are you using?
     (1) PagerDuty
-    (2) Other
+    (2) Better Uptime
+    (3) Other
 
-    Enter a selection (1 - 2): " incident_system_id
+    Enter a selection (1 - 3): " incident_system_id
 
     printf "\n"
 
