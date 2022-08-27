@@ -40,6 +40,8 @@ def index():
         raise Exception("Not a valid Pub/Sub Message")
     msg = envelope["message"]
 
+    print(f" Raw message output {msg}")
+
     if "attributes" not in msg:
         raise Exception("Missing pubsub attributes")
 
