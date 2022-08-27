@@ -44,9 +44,16 @@ def index():
         raise Exception("Missing pubsub attributes")
 
     try:
-        event = process_betteruptime_event(msg)
+        attr = msg["attributes"]
 
-        # [Do not edit below]
+        # Header event info
+        if "headers" in attr:
+            headers = json.loads(attr["headers"])
+
+            # Process Better Uptime events
+            if "X-Betteruptime-Event" in headers:
+                event = process_betteruptime_event(msg)
+
         shared.insert_row_into_bigquery(event)
 
     except Exception as e:
@@ -63,14 +70,19 @@ def index():
 def process_betteruptime_event(msg):
     metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
 
+    event_type = metadata['type']
+    event_id = metadata['id']
+    time_created = metadata['started_at']
+    signature = shared.create_unique_id(msg)
+
     betteruptime_event = {
-        "event_type": metadata["type"],  # Event type, eg "push", "pull_reqest", etc
-        "id": metadata["id"],  # Object ID, eg pull request ID
-        "metadata": json.dumps(metadata),  # The body of the msg
-        "time_created": metadata["started_at"],  # The timestamp of with the event
-        "time_resolved": metadata["resolved_at"], # The timestamp the incident was resolved
-        "msg_id": msg["message_id"],  # The pubsub message id
-        "source": "betteruptime",  # The name of the source, eg "github"
+        "event_type": event_type,
+        "id": event_id,
+        "metadata": json.dumps(metadata),
+        "time_created": time_created,
+        "signature": signature,
+        "msg_id": msg["message_id"],
+        "source": "betteruptime"
     }
 
     print(betteruptime_event)
