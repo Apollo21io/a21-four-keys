@@ -130,7 +130,7 @@ def get_source(headers):
     """
     Gets the source from the User-Agent header
     """
-    if "X-Betteruptime-Event" in headers:
+    if "X-Betteruptime-Token" in headers:
         return "betteruptime"
 
     if "X-Gitlab-Event" in headers:
