@@ -68,14 +68,15 @@ def process_betteruptime_event(msg):
 
     event_type = metadata['type']
     event_id = metadata['id']
-    time_created = metadata['attributes']['started_at']
+    ## time_created = metadata['attributes']['started_at']
     signature = shared.create_unique_id(msg)
 
     betteruptime_event = {
         "event_type": event_type,
         "id": event_id,
         "metadata": json.dumps(metadata),
-        "time_created": time_created,
+        "time_created": msg["publishTime"],
+        ## "time_created": time_created,
         "signature": signature,
         "msg_id": msg["message_id"],
         "source": "betteruptime",
