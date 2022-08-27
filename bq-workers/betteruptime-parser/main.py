@@ -45,7 +45,10 @@ def index():
 
     try:
         event = process_betteruptime_event(msg)
-        shared.insert_row_into_bigquery(event)
+        print(f" Event which is to be inserted into Big query {event}")
+
+        if event:
+            shared.insert_row_into_bigquery(event)
 
     except Exception as e:
         entry = {
@@ -54,7 +57,7 @@ def index():
                 "errors": str(e),
                 "json_payload": envelope
             }
-        print(json.dumps(entry))
+        print(f"EXCEPTION raised  {json.dumps(entry)}")
 
     return "", 204
 
