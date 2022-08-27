@@ -44,16 +44,7 @@ def index():
         raise Exception("Missing pubsub attributes")
 
     try:
-        attr = msg["attributes"]
-
-        # Header event info
-        if "headers" in attr:
-            headers = json.loads(attr["headers"])
-
-            # Process Better Uptime events
-            if "X-Betteruptime-Event" in headers:
-                event = process_betteruptime_event(msg)
-
+        event = process_betteruptime_event(msg)
         shared.insert_row_into_bigquery(event)
 
     except Exception as e:
@@ -81,7 +72,7 @@ def process_betteruptime_event(msg):
         "time_created": time_created,
         "signature": signature,
         "msg_id": msg["message_id"],
-        "source": "betteruptime"
+        "source": "betteruptime",
     }
 
     print(betteruptime_event)
