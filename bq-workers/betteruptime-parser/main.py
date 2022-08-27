@@ -44,10 +44,14 @@ def index():
         raise Exception("Missing pubsub attributes")
 
     try:
-        event = process_betteruptime_event(msg)
-        print(f" Event which is to be inserted into Big query {event}")
+        attr = msg["attributes"]
 
-        if event:
+        if "headers" in attr:
+            headers = json.loads(attr["headers"])
+
+            event = process_betteruptime_event(headers, msg)
+            print(f" Event which is to be inserted into Big query {event}")
+
             shared.insert_row_into_bigquery(event)
 
     except Exception as e:
@@ -61,23 +65,17 @@ def index():
 
     return "", 204
 
-def process_betteruptime_event(msg):
-    metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
-
-    print(f"Metadata after decoding {metadata}")
-
-    event_type = metadata['type']
-    event_id = metadata['id']
-    ## time_created = metadata['attributes']['started_at']
-    signature = shared.create_unique_id(msg)
+def process_betteruptime_event(headers, msg):
+    metadata = base64.b64decode(msg["data"]).decode("utf-8").strip()
+    incident_event = from_http(headers, metadata)
+    time_created = incident_event.data['attributes']['started_at']
 
     betteruptime_event = {
-        "event_type": event_type,
-        "id": event_id,
-        "metadata": json.dumps(metadata),
-        "time_created": msg["publishTime"],
-        ## "time_created": time_created,
-        "signature": signature,
+        "event_type": incident_event["type"],
+        "id": incident_event["id"],
+        "metadata": to_json(incident_event).decode(),
+        "time_created": time_created,
+        "signature": incident_event["id"],
         "msg_id": msg["message_id"],
         "source": "betteruptime",
     }
