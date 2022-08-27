@@ -60,6 +60,9 @@ def index():
 
 def process_betteruptime_event(msg):
     metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
+
+    print(f"Metadata after decoding {metadata}")
+
     event_type = metadata['type']
     event_id = metadata['id']
     time_created = metadata['attributes']['started_at']
@@ -75,7 +78,7 @@ def process_betteruptime_event(msg):
         "source": "betteruptime",
     }
 
-    print(betteruptime_event)
+    print(f"Better Uptime event to metrics--------> {betteruptime_event}")
     return betteruptime_event
 
 if __name__ == "__main__":
