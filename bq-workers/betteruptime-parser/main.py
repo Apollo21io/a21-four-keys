@@ -68,12 +68,16 @@ def process_betteruptime_event(msg):
     metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
 
     # Most up to date timestamp for the event
-    time_created = (metadata.get("started_at") or metadata.get("acknowledged_at") or metadata.get("resolved_at"))
-    e_id = metadata["id"]
+    time_created = (metadata["data"]["attributes"]["started_at"] or
+                    metadata["data"]["attributes"]["acknowledged_at"] or
+                    metadata["data"]["attributes"]["resolved_at"])
+
+    event_id = metadata["data"]["id"]
+    event_type = metadata["data"]["type"]
 
     betteruptime_event = {
-        "event_type": "incident",
-        "id": e_id,
+        "event_type": event_type,
+        "id": event_id,
         "metadata": json.dumps(metadata),
         "time_created": time_created,
         "signature": signature,
@@ -81,7 +85,7 @@ def process_betteruptime_event(msg):
         "source": "betteruptime",
     }
 
-    print(f"Better Uptime event to metrics--------> {betteruptime_event}")
+    print(betteruptime_event)
     return betteruptime_event
 
 if __name__ == "__main__":
