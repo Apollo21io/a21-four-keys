@@ -62,7 +62,7 @@ def index():
 
 def process_betteruptime_event(msg):
     signature = shared.create_unique_id(msg)
-    metadata = json.loads(r'base64.b64decode(msg["data"]).decode("utf-8").strip()')
+    metadata = json.loads(base64.b64decode(msg["data"]).decode(r"utf-8").strip())
 
     print(f"Metadata after decoding {metadata}")
 
