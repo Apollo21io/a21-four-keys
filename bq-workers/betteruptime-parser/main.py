@@ -45,8 +45,6 @@ def index():
 
     try:
         event = process_betteruptime_event(msg)
-        print(f" Event which is to be inserted into Big query {event}")
-
         shared.insert_row_into_bigquery(event)
 
     except Exception as e:
@@ -56,24 +54,21 @@ def index():
                 "errors": str(e),
                 "json_payload": envelope
             }
-        print(f"EXCEPTION raised  {json.dumps(entry)}")
+        print(json.dumps(entry))
 
     return "", 204
 
 def process_betteruptime_event(msg):
-    # Unique hash for the event
     signature = shared.create_unique_id(msg)
-
-    # Payload
-    metadata = json.loads(base64.b64decode(msg["data"]).decode("utf-8").strip())
-
-    # Most up to date timestamp for the event
-    time_created = (metadata["data"]["attributes"]["started_at"] or
-                    metadata["data"]["attributes"]["acknowledged_at"] or
-                    metadata["data"]["attributes"]["resolved_at"])
+    metadata = json.loads(base64.b64decode(msg[r"data"]).decode("utf-8").strip())
 
     event_id = metadata["data"]["id"]
     event_type = metadata["data"]["type"]
+
+    # most up to date timestamp for the incident
+    time_created = (metadata["data"]["attributes"]["started_at"] or
+                    metadata["data"]["attributes"]["acknowledged_at"] or
+                    metadata["data"]["attributes"]["resolved_at"])
 
     betteruptime_event = {
         "event_type": event_type,
@@ -81,7 +76,7 @@ def process_betteruptime_event(msg):
         "metadata": json.dumps(metadata),
         "time_created": time_created,
         "signature": signature,
-        "msg_id": msg["message_id"],
+        "msg_id": msg['message_id'],
         "source": "betteruptime",
     }
 
