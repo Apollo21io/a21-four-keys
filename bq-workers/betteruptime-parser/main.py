@@ -45,7 +45,9 @@ def index():
 
     try:
         event = process_betteruptime_event(msg)
-        shared.insert_row_into_bigquery(event)
+        print(f" Event which is to be inserted into Big query {event}")
+        if event:
+            shared.insert_row_into_bigquery(event)
 
     except Exception as e:
         entry = {
@@ -54,13 +56,15 @@ def index():
                 "errors": str(e),
                 "json_payload": envelope
             }
-        print(json.dumps(entry))
+        print(f"EXCEPTION raised  {json.dumps(entry)}")
 
     return "", 204
 
 def process_betteruptime_event(msg):
     signature = shared.create_unique_id(msg)
     metadata = json.loads(base64.b64decode(msg[r"data"]).decode("utf-8").strip())
+
+    print(f"Metadata after decoding {metadata}")
 
     event_id = metadata["data"]["id"]
     event_type = metadata["data"]["type"]
@@ -80,7 +84,7 @@ def process_betteruptime_event(msg):
         "source": "betteruptime",
     }
 
-    print(betteruptime_event)
+    print(f"Better Uptime event to metrics--------> {betteruptime_event}")
     return betteruptime_event
 
 if __name__ == "__main__":
