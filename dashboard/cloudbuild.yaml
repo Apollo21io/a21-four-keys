@@ -10,12 +10,12 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
+# limitations under the License.         
 
 steps:
 - # Build grafana image
   name: gcr.io/cloud-builders/docker:latest
-  args: ['build', '--tag', 
+  args: ['build', '--tag', '--build-arg', 'GRAFANA_PASS=$GRAFANA_PASS',
          'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '.']
   id: build
 
@@ -34,8 +34,13 @@ steps:
   ]
   id: deploy
 
-# Read more about substitutions 
+# Read more about substitutions
 # https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values
 substitutions:
   _TAG: latest
   _REGION: us-central1
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/a21-devops-metrics-360821/secrets/grafana-admin/versions/1
+    env: 'GRAFANA_PASS'
