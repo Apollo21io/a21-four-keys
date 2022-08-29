@@ -15,9 +15,9 @@
 FROM grafana/grafana
 
 # Remove / disable these to require authentication
-ENV GF_AUTH_DISABLE_LOGIN_FORM "true"
-ENV GF_AUTH_ANONYMOUS_ENABLED "true"
-ENV GF_AUTH_ANONYMOUS_ORG_ROLE "Admin"
+# ENV GF_AUTH_DISABLE_LOGIN_FORM "true"
+# ENV GF_AUTH_ANONYMOUS_ENABLED "true"
+# ENV GF_AUTH_ANONYMOUS_ORG_ROLE "Admin"
 
 # during setup, this variable will be configured onto the Cloud Run service
 # (default here to "US" as a fallback)
