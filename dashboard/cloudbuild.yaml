@@ -42,5 +42,5 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/a21-devops-metrics-360821/secrets/grafana-admin/versions/1
+  - versionName: projects/468111201460/secrets/grafana-admin/versions/1
     env: 'GRAFANA_PASS'
