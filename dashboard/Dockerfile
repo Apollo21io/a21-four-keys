@@ -37,4 +37,4 @@ COPY datasource.yaml /etc/grafana/provisioning/datasources
 RUN grafana-cli plugins install doitintl-bigquery-datasource
 
 ## Reset Grafana password
-RUN grafana-cli admin reset-admin-password $GRAFANA_PASS
+## RUN grafana-cli admin reset-admin-password $GRAFANA_PASS
