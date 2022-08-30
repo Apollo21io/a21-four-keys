@@ -34,9 +34,9 @@ if [[ ${AUTO} == 'true' ]]
 then
     # populate setup variables (for use in testing/dev)
     git_system_id=2
-    cicd_system_id=1
-    incident_system_id=1
-    generate_mock_data=y
+    cicd_system_id=5
+    incident_system_id=2
+    generate_mock_data=n
     CLEAN='true'
 else
     printf "\n"

@@ -16,8 +16,6 @@ FROM grafana/grafana
 
 ARG GRAFANA_PASS
 
-RUN echo password is $GRAFANA_PASS
-
 # Remove / disable these to require authentication
 # ENV GF_AUTH_DISABLE_LOGIN_FORM "true"
 # ENV GF_AUTH_ANONYMOUS_ENABLED "true"

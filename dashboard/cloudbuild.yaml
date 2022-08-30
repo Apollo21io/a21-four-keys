@@ -15,19 +15,11 @@
 steps:
 # Build the Grafana image
 - name: 'gcr.io/cloud-builders/docker'
-  entrypoint: 'bash'
   args:
-    - -c
-    - echo password is $$GRAFANA_PASS
-  secretEnv: ['GRAFANA_PASS']
-  id: test
-
-# Build the Grafana image
-- name: 'gcr.io/cloud-builders/docker'
-  entrypoint: 'bash'
-  args:
-    - -c
-    - docker build --build-arg GRAFANA_PASS=$$GRAFANA_PASS -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .
+  - 'build'
+  - '--tag=gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}'
+  - '--build-arg=GRAFANA_PASS=$$GRAFANA_PASS'
+  - '.'
   secretEnv: ['GRAFANA_PASS']
   id: build
 
@@ -54,5 +46,5 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/468111201460/secrets/grafana-admin/versions/latest
+  - versionName: projects/385390883638/secrets/grafana-admin/versions/1
     env: 'GRAFANA_PASS'
