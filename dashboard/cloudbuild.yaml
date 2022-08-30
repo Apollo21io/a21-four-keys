@@ -14,8 +14,9 @@
 
 steps:
 - # Build grafana image
-  name: gcr.io/cloud-builders/docker:latest
-  args: ['c', 'docker build --build-arg GRAFANA_PASS=$$GRAFANA_PASS -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} --no-cache .']
+  name: gcr.io/cloud-builders/docker
+  entrypoint: 'bash'
+  args: ['-c', 'docker build --build-arg="GRAFANA_PASS=$$GRAFANA_PASS" -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .']
   secretEnv: ['GRAFANA_PASS']
   id: build
 
