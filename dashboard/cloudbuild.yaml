@@ -13,9 +13,15 @@
 # limitations under the License.
 
 steps:
+- # Test secret
+  name: gcr.io/cloud-builders/docker:latest
+  args: ['c', 'echo', '$$GRAFANA_PASS']
+  secretEnv: ['GRAFANA_PASS']
+  id: build
+
 - # Build grafana image
   name: gcr.io/cloud-builders/docker:latest
-  args: ['-c', 'build', '-t', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '.', '--build-arg', 'GRAFANA_PASS=$$GRAFANA_PASS']
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '.', '--build-arg', 'GRAFANA_PASS=$$GRAFANA_PASS']
   secretEnv: ['GRAFANA_PASS']
   id: build
 
