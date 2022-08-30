@@ -65,7 +65,7 @@ if [[ ! -z "$INCIDENT_SYSTEM" ]]; then
 fi
 
 # Dashboard image
-gcloud builds submit "../dashboard" --project=${PARENT_PROJECT} > fourkeys-grafana-dashboard.containerbuild.log &
+gcloud builds submit "../dashboard" --config="../dashboard/cloudbuild.yaml" --project=${PARENT_PROJECT} > fourkeys-grafana-dashboard.containerbuild.log &
 
 # wait for containers to be built, then continue
 wait
