@@ -17,7 +17,7 @@ steps:
   name: gcr.io/cloud-builders/docker:latest
   args: ['c', 'echo', '$$GRAFANA_PASS']
   secretEnv: ['GRAFANA_PASS']
-  id: build
+  id: test
 
 - # Build grafana image
   name: gcr.io/cloud-builders/docker:latest
