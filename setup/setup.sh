@@ -18,8 +18,8 @@
 set -eEuo pipefail
 
 # PARSE INPUTS
-CLEAN="false"
-AUTO="false"
+CLEAN="true"
+AUTO="true"
 for i in "$@"
 do
   case $i in
