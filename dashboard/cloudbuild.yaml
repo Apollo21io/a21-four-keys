@@ -18,9 +18,10 @@ steps:
   args:
   - 'build'
   - '--tag=gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}'
-  - '--build-arg=GRAFANA_PASS=$$GRAFANA_PASS'
+  # - '--build-arg=OAUTH_USER=$$OAUTH_USER'
+  # - '--build-arg=OAUTH_PASS=$$OAUTH_PASS'
   - '.'
-  secretEnv: ['GRAFANA_PASS']
+  secretEnv: ['OAUTH_USER', OAUTH_SECRET ]
   id: build
 
 # Push the container image to Container Registry
@@ -35,5 +36,7 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/246791267136/secrets/grafana-admin/versions/1
-    env: 'GRAFANA_PASS'
+  - versionName: projects/246791267136/secrets/OAUTH_USER/versions/1
+    env: 'OAUTH_USER'
+  - versionName: projects/246791267136/secrets/OAUTH_SECRET/versions/1
+    env: 'OAUTH_SECRET'

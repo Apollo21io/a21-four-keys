@@ -14,8 +14,6 @@
 
 FROM grafana/grafana
 
-ARG GRAFANA_PASS
-
 # Remove / disable these to require authentication
 # ENV GF_AUTH_DISABLE_LOGIN_FORM "true"
 # ENV GF_AUTH_ANONYMOUS_ENABLED "true"
@@ -35,6 +33,3 @@ COPY datasource.yaml /etc/grafana/provisioning/datasources
 
 # Installing the BigQuery Plugin
 RUN grafana-cli plugins install doitintl-bigquery-datasource
-
-## Reset Grafana password
-## RUN grafana-cli admin reset-admin-password $GRAFANA_PASS
