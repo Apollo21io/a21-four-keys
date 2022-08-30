@@ -15,8 +15,8 @@
 steps:
 - # Build grafana image
   name: gcr.io/cloud-builders/docker:latest
-  args: ['build', '--tag', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '--build-arg=GRAFANA_PASS=$GRAFANA_PASS', '.']
-  secretEnv: 'GRAFANA_PASS'
+  args: ['build', '--tag', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '--build-arg=GRAFANA_PASS=$$GRAFANA_PASS', '.']
+  secretEnv: ['GRAFANA_PASS']
   id: build
 
 - # Push the container image to Container Registry
