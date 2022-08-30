@@ -10,13 +10,14 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.         
+# limitations under the License.
 
 steps:
 - # Build grafana image
   name: gcr.io/cloud-builders/docker:latest
   args: ['build', '--tag', '--build-arg', 'GRAFANA_PASS=$GRAFANA_PASS',
          'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}', '.']
+  secretEnv: ['GRAFANA_PASS']
   id: build
 
 - # Push the container image to Container Registry
