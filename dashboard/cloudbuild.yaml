@@ -13,11 +13,20 @@
 # limitations under the License.
 
 steps:
-- # Build grafana image
-  name: gcr.io/cloud-builders/docker
+- # Access the Grafana creds from Secret Manager
+  name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
-  args: ['-c', 'docker build --build-arg="GRAFANA_PASS=$$GRAFANA_PASS" -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .']
-  secretEnv: ['GRAFANA_PASS']
+  args:
+    - -c
+    - gcloud secrets versions access 1 --secret=grafana-admin > /workspace/var.txt
+  id: prepare
+
+- # Build the Grafana image
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args:
+    - -c
+    - docker build --build-arg GRAFANA_PASS=$(cat /workspace/var.txt) -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .
   id: build
 
 - # Push the container image to Container Registry
@@ -40,8 +49,3 @@ steps:
 substitutions:
   _TAG: latest
   _REGION: us-central1
-
-availableSecrets:
-  secretManager:
-  - versionName: projects/468111201460/secrets/grafana-admin/versions/1
-    env: 'GRAFANA_PASS'
