@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # This script installs Four Keys; it requires several environment
-# variables and terraform variables to be set; to set them interactively 
+# variables and terraform variables to be set; to set them interactively
 # and then launch installation, run `setup.sh`.
 
     # REQUIRED ENVIRONMENT VARIABLES
@@ -50,22 +50,22 @@ FOURKEYS_PROJECTNUM=$(gcloud projects describe ${FOURKEYS_PROJECT} --format='val
 gcloud projects add-iam-policy-binding ${FOURKEYS_PROJECT} --member="serviceAccount:${PARENT_PROJECTNUM}@cloudbuild.gserviceaccount.com" --role="roles/storage.admin"
 
 # launch container builds in background/parallel
-gcloud builds submit ../event-handler --tag=gcr.io/${FOURKEYS_PROJECT}/event-handler --project=${PARENT_PROJECT} > event_handler.containerbuild.log & 
+gcloud builds submit ../event-handler --tag=gcr.io/${FOURKEYS_PROJECT}/event-handler --project=${PARENT_PROJECT} > event_handler.containerbuild.log &
 
 if [[ ! -z "$GIT_SYSTEM" ]]; then
-    gcloud builds submit ../bq-workers/${GIT_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${GIT_SYSTEM}-parser --project=${PARENT_PROJECT} > ${GIT_SYSTEM}-parser.containerbuild.log & 
+    gcloud builds submit ../bq-workers/${GIT_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${GIT_SYSTEM}-parser --project=${PARENT_PROJECT} > ${GIT_SYSTEM}-parser.containerbuild.log &
 fi
 
 if [[ ! -z "$CICD_SYSTEM" && "$CICD_SYSTEM" != "$GIT_SYSTEM" ]]; then
-    gcloud builds submit ../bq-workers/${CICD_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${CICD_SYSTEM}-parser --project=${PARENT_PROJECT} > ${CICD_SYSTEM}-parser.containerbuild.log & 
+    gcloud builds submit ../bq-workers/${CICD_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${CICD_SYSTEM}-parser --project=${PARENT_PROJECT} > ${CICD_SYSTEM}-parser.containerbuild.log &
 fi
 
 if [[ ! -z "$INCIDENT_SYSTEM" ]]; then
-    gcloud builds submit ../bq-workers/${INCIDENT_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${INCIDENT_SYSTEM}-parser --project=${PARENT_PROJECT} > ${INCIDENT_SYSTEM}-parser.containerbuild.log & 
+    gcloud builds submit ../bq-workers/${INCIDENT_SYSTEM}-parser --tag=gcr.io/${FOURKEYS_PROJECT}/${INCIDENT_SYSTEM}-parser --project=${PARENT_PROJECT} > ${INCIDENT_SYSTEM}-parser.containerbuild.log &
 fi
 
 # Dashboard image
-gcloud builds submit ../dashboard --tag=gcr.io/${FOURKEYS_PROJECT}/fourkeys-grafana-dashboard --project=${PARENT_PROJECT} > fourkeys-grafana-dashboard.containerbuild.log & 
+gcloud builds submit "../dashboard" --project=${PARENT_PROJECT} > fourkeys-grafana-dashboard.containerbuild.log &
 
 # wait for containers to be built, then continue
 wait
@@ -78,7 +78,7 @@ echo "Terraform resource creation complete."
 echo "••••••••🔑••🔑••🔑••🔑••••••••"
 
 if [ $GENERATE_DATA == "yes" ]; then
-    
+
     TOKEN=""
 
     # Create an identity token if running in cloudbuild tests
@@ -90,7 +90,7 @@ if [ $GENERATE_DATA == "yes" ]; then
         "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/fourkeys@${FOURKEYS_PROJECT}.iam.gserviceaccount.com:generateIdToken" | \
         python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
     fi
-    
+
     echo "generating data…"
     WEBHOOK=$(terraform output -raw event_handler_endpoint) SECRET=$(terraform output -raw event_handler_secret) TOKEN=${TOKEN} python3 ../data-generator/generate_data.py --vc_system=${GIT_SYSTEM}
 fi
