@@ -22,17 +22,16 @@ resource "google_cloud_run_service" "dashboard" {
           name = "GF_AUTH_GOOGLE_CLIENT_ID"
           value_from {
             secret_key_ref {
-              name = OAUTH_USER
+              name = "OAUTH_USER"
               key  = "latest"
             }
           }
         }
-
         env {
           name = "GF_AUTH_GOOGLE_CLIENT_SECRET"
           value_from {
             secret_key_ref {
-              name = OAUTH_SECRET
+              name = "OAUTH_SECRET"
               key  = "latest"
             }
           }
