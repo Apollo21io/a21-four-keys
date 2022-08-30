@@ -46,5 +46,5 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/385390883638/secrets/grafana-admin/versions/1
+  - versionName: projects/246791267136/secrets/grafana-admin/versions/1
     env: 'GRAFANA_PASS'
