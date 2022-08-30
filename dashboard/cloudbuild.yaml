@@ -13,29 +13,31 @@
 # limitations under the License.
 
 steps:
-- # Access the Grafana creds from Secret Manager
-  name: gcr.io/cloud-builders/gcloud
+# Build the Grafana image
+- name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
   args:
     - -c
-    - gcloud secrets versions access 1 --secret=grafana-admin > /workspace/var.txt
-  id: prepare
+    - echo password is $$GRAFANA_PASS
+  secretEnv: ['GRAFANA_PASS']
+  id: test
 
-- # Build the Grafana image
-  name: 'gcr.io/cloud-builders/docker'
+# Build the Grafana image
+- name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
   args:
     - -c
-    - docker build --build-arg GRAFANA_PASS=$(cat /workspace/var.txt) -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .
+    - docker build --build-arg GRAFANA_PASS=$$GRAFANA_PASS -t gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG} .
+  secretEnv: ['GRAFANA_PASS']
   id: build
 
-- # Push the container image to Container Registry
-  name: gcr.io/cloud-builders/docker
+# Push the container image to Container Registry
+- name: gcr.io/cloud-builders/docker
   args: ['push', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}']
   id: push
 
-- # Deploy to Cloud Run
-  name: google/cloud-sdk
+# Deploy to Cloud Run
+- name: google/cloud-sdk
   args: ['gcloud', 'run', 'deploy', 'fourkeys-grafana-dashboard',
          '--image', 'gcr.io/$PROJECT_ID/fourkeys-grafana-dashboard:${_TAG}',
          '--region', '${_REGION}',
@@ -49,3 +51,8 @@ steps:
 substitutions:
   _TAG: latest
   _REGION: us-central1
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/468111201460/secrets/grafana-admin/versions/latest
+    env: 'GRAFANA_PASS'
