@@ -1,5 +1,5 @@
 resource "google_cloud_run_service" "dashboard" {
-  name     = "fourkeys-grafana-dashboard"
+  name     = "grafana-dashboard"
   location = var.google_region
 
   template {
@@ -8,7 +8,7 @@ resource "google_cloud_run_service" "dashboard" {
         ports {
           container_port = 3000
         }
-        image = "gcr.io/${var.google_project_id}/fourkeys-grafana-dashboard"
+        image = "gcr.io/${var.google_project_id}/grafana-dashboard"
         env {
           name  = "PROJECT_NAME"
           value = var.google_project_id
@@ -55,7 +55,7 @@ resource "google_cloud_run_service" "dashboard" {
 resource "google_cloud_run_service_iam_binding" "noauth" {
   location = var.google_region
   project  = var.google_project_id
-  service  = "fourkeys-grafana-dashboard"
+  service  = "grafana-dashboard"
 
   role       = "roles/run.invoker"
   members    = ["allUsers"]
