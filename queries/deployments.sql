@@ -76,9 +76,9 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     deployment_changes as (
       SELECT
       source,
-      repo_name,
-      release_branch,
       deploy_id,
+      repo_name as repo_name,
+      release_branch as release_branch,
       deploys.time_created time_created,
       change_metadata,
       four_keys.json2array(JSON_EXTRACT(change_metadata, '$.commits')) as array_commits,
@@ -94,9 +94,11 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     SELECT 
     source,
     deploy_id,
+    repo_name,
+    release_branch,
     time_created,
     main_commit,   
     ARRAY_AGG(DISTINCT JSON_EXTRACT_SCALAR(array_commits, '$.id')) changes,    
     FROM deployment_changes
     CROSS JOIN deployment_changes.array_commits
-    GROUP BY 1,2,3,4;
+    GROUP BY 1,2,3,4,5,6;
