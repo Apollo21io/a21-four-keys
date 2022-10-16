@@ -2,6 +2,8 @@
 SELECT
 source,
 incident_id,
+repo_name,
+release_branch,
 MIN(IF(root.time_created < issue.time_created, root.time_created, issue.time_created)) as time_created,
 MAX(time_resolved) as time_resolved,
 ARRAY_AGG(root_cause IGNORE NULLS) changes,
