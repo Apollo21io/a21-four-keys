@@ -4,6 +4,8 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
       SELECT 
       source,
       id as deploy_id,
+      repo_name,
+      release_branch,
       time_created,
       CASE WHEN source = "cloud_build" then JSON_EXTRACT_SCALAR(metadata, '$.substitutions.COMMIT_SHA')
            WHEN source like "github%" then JSON_EXTRACT_SCALAR(metadata, '$.deployment.sha')
@@ -64,10 +66,6 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     deploys AS (
       SELECT * FROM
       deploys_cloudbuild_github_gitlab
-      UNION ALL
-      SELECT * FROM deploys_tekton
-      UNION ALL
-      SELECT * FROM deploys_circleci
     ),
     changes_raw AS (
       SELECT
@@ -78,6 +76,8 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     deployment_changes as (
       SELECT
       source,
+      repo_name,
+      release_branch,
       deploy_id,
       deploys.time_created time_created,
       change_metadata,
