@@ -2,8 +2,6 @@
 SELECT 
 source,
 event_type,
-repo_name,
-release_branch,
 JSON_EXTRACT_SCALAR(commit, '$.id') change_id,
 TIMESTAMP_TRUNC(TIMESTAMP(JSON_EXTRACT_SCALAR(commit, '$.timestamp')),second) as time_created,
 FROM four_keys.events e,

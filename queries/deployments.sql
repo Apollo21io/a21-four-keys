@@ -3,8 +3,6 @@
 WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipelines
       SELECT 
       source,
-      repo_name,
-      release_branch,
       id as deploy_id,
       time_created,
       CASE WHEN source = "cloud_build" then JSON_EXTRACT_SCALAR(metadata, '$.substitutions.COMMIT_SHA')
@@ -39,8 +37,6 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     deploys_tekton AS (# Tekton Pipelines
       SELECT
       source,
-      repo_name,
-      release_branch,
       id as deploy_id,
       time_created,
       IF(JSON_EXTRACT_SCALAR(param, '$.name') = "gitrevision", JSON_EXTRACT_SCALAR(param, '$.value'), Null) as main_commit,
@@ -58,8 +54,6 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
     deploys_circleci AS (# CircleCI pipelines
       SELECT
       source,
-      repo_name,
-      release_branch,
       id AS deploy_id,
       time_created,
       JSON_EXTRACT_SCALAR(metadata, '$.pipeline.vcs.revision') AS main_commit,
