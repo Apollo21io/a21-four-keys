@@ -20,7 +20,7 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
                 SELECT JSON_EXTRACT_SCALAR(string_element, '$')
                 FROM UNNEST(JSON_EXTRACT_ARRAY(metadata, '$.deployment.additional_sha')) AS string_element)
            ELSE ARRAY<string>[] end as additional_commits
-      FROM four_keys.events_raw 
+      FROM four_keys.events 
       WHERE (
       # Cloud Build Deployments
          (source = "cloud_build" AND JSON_EXTRACT_SCALAR(metadata, '$.status') = "SUCCESS")
@@ -47,7 +47,7 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
       TIMESTAMP_TRUNC(time_created, second) as time_created,
       source,
       four_keys.json2array(JSON_EXTRACT(metadata, '$.data.pipelineRun.spec.params')) params
-      FROM four_keys.events_raw
+      FROM four_keys.events
       WHERE event_type = "dev.tekton.event.pipelinerun.successful.v1" 
       AND metadata like "%gitrevision%") e, e.params as param
     ),
@@ -58,7 +58,7 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
       time_created,
       JSON_EXTRACT_SCALAR(metadata, '$.pipeline.vcs.revision') AS main_commit,
       ARRAY<string>[] AS additional_commits
-      FROM four_keys.events_raw
+      FROM four_keys.events
       WHERE (source = "circleci" AND event_type = "workflow-completed" AND JSON_EXTRACT_SCALAR(metadata, '$.workflow.name') LIKE "%deploy%" AND JSON_EXTRACT_SCALAR(metadata, '$.workflow.status') = "success")
     ),
     deploys AS (
@@ -73,7 +73,7 @@ WITH deploys_cloudbuild_github_gitlab AS (# Cloud Build, Github, Gitlab pipeline
       SELECT
       id,
       metadata as change_metadata
-      FROM four_keys.events_raw
+      FROM four_keys.events
     ),
     deployment_changes as (
       SELECT

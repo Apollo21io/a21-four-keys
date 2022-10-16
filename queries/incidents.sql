@@ -31,7 +31,7 @@ CASE WHEN source LIKE "github%" THEN REGEXP_CONTAINS(JSON_EXTRACT(metadata, '$.i
      WHEN source LIKE "pagerduty%" THEN TRUE # All Pager Duty events are incident-related
      WHEN source LIKE "betteruptime%" THEN TRUE # All Better Uptime events are incident-related
      END AS bug,
-FROM four_keys.events_raw
+FROM four_keys.events
 WHERE event_type LIKE "issue%" OR event_type LIKE "incident%" OR (event_type = "note" and JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.noteable_type') = 'Issue')
 ) issue
 LEFT JOIN (SELECT time_created, changes FROM four_keys.deployments d, d.changes) root on root.changes = root_cause
