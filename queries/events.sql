@@ -6,6 +6,9 @@ SELECT raw.id,
        CASE 
          WHEN source LIKE 'github%' THEN JSON_EXTRACT_SCALAR(metadata, '$.deployment.ref')
        END AS release_branch,
+       CASE 
+         WHEN source LIKE 'betteruptime%' THEN JSON_EXTRACT_SCALAR(metadata, '$.data.event_status')
+       END AS event_status,
        raw.event_type,
        raw.time_created,
        raw.metadata,
