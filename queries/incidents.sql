@@ -9,8 +9,6 @@ FROM
 (
 SELECT
 source,
-repo_name,
-release_branch,
 CASE WHEN source LIKE "github%" THEN JSON_EXTRACT_SCALAR(metadata, '$.issue.number')
      WHEN source LIKE "gitlab%" AND event_type = "note" THEN JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.noteable_id')
      WHEN source LIKE "gitlab%" AND event_type = "issue" THEN JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.id')
@@ -20,12 +18,12 @@ CASE WHEN source LIKE "github%" THEN JSON_EXTRACT_SCALAR(metadata, '$.issue.numb
 CASE WHEN source LIKE "github%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.issue.created_at'))
      WHEN source LIKE "gitlab%" THEN four_keys.multiFormatParseTimestamp(JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.created_at'))
      WHEN source LIKE "pagerduty%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.event.occurred_at'))
-     WHEN source LIKE "betteruptime%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.data.started_at'))
+     WHEN source LIKE "betteruptime%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.data.attributes.started_at'))
      END AS time_created,
 CASE WHEN source LIKE "github%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.issue.closed_at'))
      WHEN source LIKE "gitlab%" THEN four_keys.multiFormatParseTimestamp(JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.closed_at'))
      WHEN source LIKE "pagerduty%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.event.occurred_at'))
-     WHEN source LIKE "betteruptime%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.data.resolved_at'))
+     WHEN source LIKE "betteruptime%" AND event_status = "resolved" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.data.attributes.resolved_at'))
      END AS time_resolved,
 REGEXP_EXTRACT(metadata, r"root cause: ([[:alnum:]]*)") as root_cause,
 CASE WHEN source LIKE "github%" THEN REGEXP_CONTAINS(JSON_EXTRACT(metadata, '$.issue.labels'), '"name":"Incident"')
