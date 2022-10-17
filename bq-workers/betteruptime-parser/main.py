@@ -66,9 +66,9 @@ def process_betteruptime_event(msg):
     event_type = metadata["data"]["type"]
 
     # most up to date timestamp for the incident
-    time_created = (metadata["data"]["attributes"]["started_at"] or
+    time_created = (metadata["data"]["attributes"]["resolved_at"] or
                     metadata["data"]["attributes"]["acknowledged_at"] or
-                    metadata["data"]["attributes"]["resolved_at"])
+                    metadata["data"]["attributes"]["started_at"])
 
     betteruptime_event = {
         "event_type": event_type,
