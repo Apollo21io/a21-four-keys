@@ -36,14 +36,17 @@ ORDER BY day LIMIT 529
 
 ## time to restore services
 
+SELECT\n  TIMESTAMP_TRUNC(time_created, DAY) as day,\n  #### Median time to resolve\n  PERCENTILE_CONT(\n    TIMESTAMP_DIFF(time_resolved, time_created, MINUTE), 0.5)\n    OVER(PARTITION BY TIMESTAMP_TRUNC(time_created, DAY)\n    ) as daily_med_time_to_restore,\n  FROM four_keys.incidents\n  WHERE release_branch IN ($release_branch) AND repo_name IN ($repo_name)\nORDER BY day LIMIT 529
+
 SELECT
   TIMESTAMP_TRUNC(time_created, DAY) as day,
   #### Median time to resolve
   PERCENTILE_CONT(
-    TIMESTAMP_DIFF(time_resolved, time_created, HOUR), 0.5)
+    TIMESTAMP_DIFF(time_resolved, time_created, MINUTE), 0.5)
     OVER(PARTITION BY TIMESTAMP_TRUNC(time_created, DAY)
     ) as daily_med_time_to_restore,
   FROM four_keys.incidents
+  WHERE release_branch IN ($release_branch) AND repo_name IN ($repo_name)
 ORDER BY day LIMIT 529
 
 
@@ -99,6 +102,8 @@ LIMIT 1
 
 ## daily change failure rate
 
+SELECT\nTIMESTAMP_TRUNC(d.time_created, DAY) as day,\n  IF(COUNT(DISTINCT change_id) = 0,0, SUM(IF(i.incident_id is NULL, 0, 1)) / COUNT(DISTINCT deploy_id)) as change_fail_rate\nFROM four_keys.deployments d, d.changes\nLEFT JOIN four_keys.changes c ON changes = c.change_id\nLEFT JOIN(SELECT\n        DISTINCT incident_id,\n        change,\n        time_resolved\n        FROM four_keys.incidents i,\n        i.changes change) i ON i.change = changes\nWHERE d.release_branch IN ($release_branch) AND  d.repo_name IN ($repo_name)\nGROUP BY day LIMIT 529
+
 SELECT
 TIMESTAMP_TRUNC(d.time_created, DAY) as day,
   IF(COUNT(DISTINCT change_id) = 0,0, SUM(IF(i.incident_id is NULL, 0, 1)) / COUNT(DISTINCT deploy_id)) as change_fail_rate
@@ -110,6 +115,7 @@ LEFT JOIN(SELECT
         time_resolved
         FROM four_keys.incidents i,
         i.changes change) i ON i.change = changes
+WHERE d.release_branch IN ($release_branch) AND  d.repo_name IN ($repo_name)
 GROUP BY day LIMIT 529
 
 ## incidents / deployments
