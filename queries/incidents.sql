@@ -2,6 +2,8 @@
 SELECT
 source,
 incident_id,
+repo_name,
+release_branch,
 MIN(IF(root.time_created < issue.time_created, root.time_created, issue.time_created)) as time_created,
 MAX(time_resolved) as time_resolved,
 ARRAY_AGG(root_cause IGNORE NULLS) changes,
@@ -15,6 +17,10 @@ CASE WHEN source LIKE "github%" THEN JSON_EXTRACT_SCALAR(metadata, '$.issue.numb
      WHEN source LIKE "pagerduty%" THEN JSON_EXTRACT_SCALAR(metadata, '$.event.data.id')
      WHEN source LIKE "betteruptime%" THEN JSON_EXTRACT_SCALAR(metadata, '$.data.id')
      END AS incident_id,
+CASE WHEN source LIKE "betteruptime%" THEN JSON_EXTRACT_SCALAR(metadata, '$.data.attributes.repo_name')
+     END AS repo_name,
+CASE WHEN source LIKE "betteruptime%" THEN JSON_EXTRACT_SCALAR(metadata, '$.data.attributes.release_branch')
+     END AS release_branch,
 CASE WHEN source LIKE "github%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.issue.created_at'))
      WHEN source LIKE "gitlab%" THEN four_keys.multiFormatParseTimestamp(JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.created_at'))
      WHEN source LIKE "pagerduty%" THEN TIMESTAMP(JSON_EXTRACT_SCALAR(metadata, '$.event.occurred_at'))
@@ -35,6 +41,5 @@ FROM four_keys.events
 WHERE event_type LIKE "issue%" OR event_type LIKE "incident%" OR (event_type = "note" and JSON_EXTRACT_SCALAR(metadata, '$.object_attributes.noteable_type') = 'Issue')
 ) issue
 LEFT JOIN (SELECT time_created, changes FROM four_keys.deployments d, d.changes) root on root.changes = root_cause
-GROUP BY 1,2
-HAVING max(bug) is True
-;
+GROUP BY 1,2,3,4
+HAVING max(bug) is True;
